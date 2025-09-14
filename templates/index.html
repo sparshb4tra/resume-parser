@@ -1,0 +1,1211 @@
+        <!DOCTYPE html>
+        <html lang="en">
+        <head>
+            <meta charset="UTF-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <title>Resume Parser & Job Matcher</title>
+            <script src="https://cdn.tailwindcss.com"></script>
+            <script>
+                tailwind.config = {
+                    theme: {
+                        extend: {
+                            colors: {
+                                'sage': {
+                                    50: '#f7fafa',
+                                    100: '#BBDCE5',
+                                    200: '#9FCFD9',
+                                    300: '#7CB8C4',
+                                    400: '#5BA1AE',
+                                    500: '#4A8A97',
+                                    600: '#3d7282',
+                                    700: '#325a68',
+                                    800: '#284349',
+                                    900: '#1e3237'
+                                },
+                                'cream': {
+                                    50: '#fefef9',
+                                    100: '#ECEEDF',
+                                    200: '#E6E8D7',
+                                    300: '#DFE2CE',
+                                    400: '#D8DCC5',
+                                    500: '#D1D6BC',
+                                    600: '#a8b094',
+                                    700: '#7f8a6c',
+                                    800: '#566344',
+                                    900: '#2d3d1c'
+                                },
+                                'blush': {
+                                    50: '#fdf9f7',
+                                    100: '#D9C4B0',
+                                    200: '#D1B8A1',
+                                    300: '#C8AC92',
+                                    400: '#C0A083',
+                                    500: '#B79474',
+                                    600: '#927760',
+                                    700: '#6d5a4c',
+                                    800: '#483d38',
+                                    900: '#232024'
+                                },
+                                'warm': {
+                                    50: '#fdf8f6',
+                                    100: '#CFAB8D',
+                                    200: '#C79F7F',
+                                    300: '#BF9371',
+                                    400: '#B78763',
+                                    500: '#AF7B55',
+                                    600: '#8c6344',
+                                    700: '#694b33',
+                                    800: '#463322',
+                                    900: '#231b11'
+                                }
+                            },
+                        }
+                    }
+                }
+            </script>
+            <style>
+                body {
+                    background: linear-gradient(135deg, #f7fafa 0%, #fefef9 50%, #fdf9f7 100%);
+                    min-height: 100vh;
+                }
+                
+                .glass-card {
+                    backdrop-filter: blur(10px);
+                    background: rgba(255, 255, 255, 0.85);
+                    border: 1px solid rgba(255, 255, 255, 0.2);
+                    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+                }
+                
+                .btn-primary {
+                    background: linear-gradient(135deg, #4A8A97 0%, #5BA1AE 100%);
+                    transition: all 0.3s ease;
+                }
+                
+                .btn-primary:hover {
+                    background: linear-gradient(135deg, #3d7282 0%, #4A8A97 100%);
+                    transform: translateY(-1px);
+                    box-shadow: 0 4px 12px rgba(74, 138, 151, 0.3);
+                }
+                
+                .btn-secondary {
+                    background: linear-gradient(135deg, #D1D6BC 0%, #E6E8D7 100%);
+                    color: #2d3d1c;
+                    transition: all 0.3s ease;
+                }
+                
+                .btn-secondary:hover {
+                    background: linear-gradient(135deg, #a8b094 0%, #D1D6BC 100%);
+                    transform: translateY(-1px);
+                    box-shadow: 0 4px 12px rgba(209, 214, 188, 0.3);
+                }
+                
+                .input-field {
+                    background: rgba(255, 255, 255, 0.7);
+                    border: 1px solid #BBDCE5;
+                    transition: all 0.3s ease;
+                }
+                
+                .input-field:focus {
+                    background: rgba(255, 255, 255, 0.9);
+                    border-color: #4A8A97;
+                    box-shadow: 0 0 0 3px rgba(74, 138, 151, 0.1);
+                }
+                
+                .upload-zone {
+                    border: 2px dashed #BBDCE5;
+                    background: rgba(187, 220, 229, 0.1);
+                    transition: all 0.3s ease;
+                }
+                
+                .upload-zone:hover {
+                    border-color: #4A8A97;
+                    background: rgba(187, 220, 229, 0.2);
+                }
+                
+                .progress-bar {
+                    background: linear-gradient(90deg, #4A8A97 0%, #7CB8C4 100%);
+                }
+                
+                .skill-tag {
+                    background: linear-gradient(135deg, #BBDCE5 0%, #9FCFD9 100%);
+                    color: #284349;
+                }
+                
+                .skill-tag-missing {
+                    background: linear-gradient(135deg, #D9C4B0 0%, #C8AC92 100%);
+                    color: #483d38;
+                }
+                
+                .loading {
+                    animation: spin 1s linear infinite;
+                }
+                
+                @keyframes spin {
+                    from { transform: rotate(0deg); }
+                    to { transform: rotate(360deg); }
+                }
+                
+                .fade-in {
+                    animation: fadeIn 0.5s ease-in;
+                }
+                
+                @keyframes fadeIn {
+                    from { opacity: 0; transform: translateY(20px); }
+                    to { opacity: 1; transform: translateY(0); }
+                }
+            </style>
+        </head>
+        <body>
+            <div class="min-h-screen py-8 px-4 sm:px-6 lg:px-8">
+                <div class="max-w-7xl mx-auto">
+                    <!-- Header -->
+                    <div class="text-center mb-12">
+                        <h1 class="text-4xl sm:text-5xl font-bold text-sage-800 mb-4">
+                            Resume Parser & Job Matcher
+                        </h1>
+                        <p class="text-lg text-sage-600 max-w-2xl mx-auto">
+                            Upload your resume and discover how well you match with job opportunities
+                        </p>
+                    </div>
+
+                    <!-- Mobile Layout (enhanced) -->
+                    <div class="lg:hidden">
+                        <!-- Mobile Progress Indicator -->
+                        <div class="mb-8">
+                            <div class="flex items-center justify-between mb-4">
+                                <div class="flex items-center" id="stepMobile1">
+                                    <div class="w-8 h-8 rounded-full bg-sage-500 text-white flex items-center justify-center text-sm font-semibold">1</div>
+                                    <div class="ml-2 text-sm font-medium text-sage-800">Resume</div>
+                                </div>
+                                
+                                <div class="flex-1 mx-3 h-1 bg-sage-200 rounded-full">
+                                    <div class="h-1 bg-sage-500 rounded-full transition-all duration-500" style="width: 33%" id="progressBar1"></div>
+                                </div>
+                                
+                                <div class="flex items-center opacity-50" id="stepMobile2">
+                                    <div class="w-8 h-8 rounded-full bg-sage-300 text-white flex items-center justify-center text-sm font-semibold">2</div>
+                                    <div class="ml-2 text-sm font-medium text-sage-600">Job</div>
+                                </div>
+                                
+                                <div class="flex-1 mx-3 h-1 bg-sage-200 rounded-full">
+                                    <div class="h-1 bg-sage-300 rounded-full transition-all duration-500" style="width: 0%" id="progressBar2"></div>
+                                </div>
+                                
+                                <div class="flex items-center opacity-50" id="stepMobile3">
+                                    <div class="w-8 h-8 rounded-full bg-sage-300 text-white flex items-center justify-center text-sm font-semibold">3</div>
+                                    <div class="ml-2 text-sm font-medium text-sage-600">Match</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="space-y-6">
+                            <!-- Resume Upload Card -->
+                            <div class="glass-card rounded-xl p-6">
+                                <div class="flex items-center mb-6">
+                                    <div class="w-8 h-8 rounded-lg bg-sage-100 flex items-center justify-center mr-3">
+                                        <svg class="w-5 h-5 text-sage-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                                        </svg>
+                                    </div>
+                                    <h2 class="text-xl font-semibold text-sage-800">Step 1: Upload Resume</h2>
+                                </div>
+                                
+                                <div class="space-y-4">
+                                    <div class="upload-zone rounded-lg p-8 text-center cursor-pointer" id="uploadZoneMobile">
+                                        <input type="file" id="resumeFileMobile" accept=".pdf,.docx,.doc" class="hidden">
+                                        <label for="resumeFileMobile" class="cursor-pointer block">
+                                            <div class="space-y-3">
+                                                <div class="mx-auto w-16 h-16 bg-sage-100 rounded-full flex items-center justify-center">
+                                                    <svg class="w-8 h-8 text-sage-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path>
+                                                    </svg>
+                                                </div>
+                                                <div>
+                                                    <p class="text-sage-700 font-medium">Click to upload your resume</p>
+                                                    <p class="text-sm text-sage-500">PDF, DOCX files up to 10MB</p>
+                                                </div>
+                                            </div>
+                                        </label>
+                                    </div>
+                                    
+                                    <button onclick="processResume()" class="btn-primary w-full py-3 px-6 rounded-lg font-medium text-white flex items-center justify-center" disabled id="processBtnMobile">
+                                        <span id="processTextMobile">Select a file first</span>
+                                        <svg id="processSpinnerMobile" class="hidden ml-2 w-5 h-5 loading text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <circle cx="12" cy="12" r="10" stroke-width="2"></circle>
+                                            <path d="m7 9 4-4 4 4M7 15l4 4 4-4"></path>
+                                        </svg>
+                                    </button>
+                                    
+                                    <!-- File name display for mobile -->
+                                    <div class="hidden mt-3 p-3 bg-sage-50 rounded-lg border border-sage-200" id="fileNameDisplayMobile">
+                                        <div class="flex items-center">
+                                            <svg class="w-4 h-4 text-sage-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                                            </svg>
+                                            <span class="text-sm text-sage-700 font-medium" id="fileNameTextMobile"></span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Resume Data Display -->
+                            <div class="glass-card rounded-xl p-6 hidden fade-in" id="resumeDataCardMobile">
+                                <div class="flex items-center mb-6">
+                                    <div class="w-8 h-8 rounded-lg bg-green-100 flex items-center justify-center mr-3">
+                                        <svg class="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                                        </svg>
+                                    </div>
+                                    <h2 class="text-xl font-semibold text-sage-800">Resume Processed</h2>
+                                </div>
+                                <div id="resumeDataMobile" class="space-y-4">
+                                    <!-- Resume data will be displayed here -->
+                                </div>
+                            </div>
+
+                            <!-- Job Description Input -->
+                            <div class="glass-card rounded-xl p-6 transition-all duration-300" id="jobSectionMobile" style="opacity: 0.5; pointer-events: none;">
+                                <div class="flex items-center mb-6">
+                                    <div class="w-8 h-8 rounded-lg bg-warm-100 flex items-center justify-center mr-3">
+                                        <svg class="w-5 h-5 text-warm-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2-2v2m8 0V6a2 2 0 012 2v6a2 2 0 01-2 2H8a2 2 0 01-2-2V8a2 2 0 012-2V6"></path>
+                                        </svg>
+                                    </div>
+                                    <h2 class="text-xl font-semibold text-sage-800">Step 2: Job Description</h2>
+                                </div>
+                                
+                                <div class="space-y-4">
+                                    <textarea 
+                                        id="jobDescriptionMobile" 
+                                        placeholder="Paste the job description here or try a sample job..."
+                                        class="input-field w-full min-h-[200px] rounded-lg px-4 py-3 resize-none focus:outline-none"
+                                        disabled
+                                    ></textarea>
+                                    
+                                    <div class="flex flex-col gap-3">
+                                        <button onclick="loadSampleJob()" class="btn-secondary py-3 px-6 rounded-lg font-medium flex items-center justify-center">
+                                            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path>
+                                            </svg>
+                                            Sample Job
+                                        </button>
+                                        
+                                        <button onclick="matchJobs()" class="btn-primary py-3 px-6 rounded-lg font-medium text-white flex items-center justify-center" disabled id="matchBtnMobile">
+                                            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+                                            </svg>
+                                            <span id="matchTextMobile">Upload resume first</span>
+                                            <svg id="matchSpinnerMobile" class="hidden ml-2 w-5 h-5 loading" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <circle cx="12" cy="12" r="10" stroke-width="2"></circle>
+                                                <path d="m7 9 4-4 4 4M7 15l4 4 4-4"></path>
+                                            </svg>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Match Results -->
+                            <div class="glass-card rounded-xl p-6 hidden fade-in" id="matchResultsCardMobile">
+                                <div class="flex items-center mb-6">
+                                    <div class="w-8 h-8 rounded-lg bg-blush-100 flex items-center justify-center mr-3">
+                                        <svg class="w-5 h-5 text-blush-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+                                        </svg>
+                                    </div>
+                                    <h2 class="text-xl font-semibold text-sage-800">Step 3: Your Match Results</h2>
+                                </div>
+                                <div id="matchResultsMobile">
+                                    <!-- Match results will be displayed here -->
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Desktop Layout (new design) -->
+                    <div class="hidden lg:block">
+                        <!-- Step-by-step process flow -->
+                        <div class="flex items-center justify-center mb-12">
+                            <div class="flex items-center space-x-8">
+                                <div class="flex items-center" id="step1">
+                                    <div class="w-10 h-10 rounded-full bg-sage-500 text-white flex items-center justify-center font-semibold">1</div>
+                                    <div class="ml-3">
+                                        <div class="text-sm font-medium text-sage-800">Upload Resume</div>
+                                        <div class="text-xs text-sage-500">PDF or DOCX</div>
+                                    </div>
+                                </div>
+                                
+                                <svg class="w-6 h-6 text-sage-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                                </svg>
+                                
+                                <div class="flex items-center opacity-50" id="step2">
+                                    <div class="w-10 h-10 rounded-full bg-sage-300 text-white flex items-center justify-center font-semibold">2</div>
+                                    <div class="ml-3">
+                                        <div class="text-sm font-medium text-sage-600">Add Job Description</div>
+                                        <div class="text-xs text-sage-400">Paste or sample</div>
+                                    </div>
+                                </div>
+                                
+                                <svg class="w-6 h-6 text-sage-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                                </svg>
+                                
+                                <div class="flex items-center opacity-50" id="step3">
+                                    <div class="w-10 h-10 rounded-full bg-sage-300 text-white flex items-center justify-center font-semibold">3</div>
+                                    <div class="ml-3">
+                                        <div class="text-sm font-medium text-sage-600">Get Match Score</div>
+                                        <div class="text-xs text-sage-400">Instant analysis</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Main content area with three sections -->
+                        <div class="space-y-8">
+                            <!-- Top section: Resume Upload (horizontal layout) -->
+                            <div class="glass-card rounded-xl p-8">
+                                <div class="flex items-start justify-between">
+                                    <div class="flex-1 mr-8">
+                                        <div class="flex items-center mb-6">
+                                            <div class="w-8 h-8 rounded-lg bg-sage-100 flex items-center justify-center mr-3">
+                                                <svg class="w-5 h-5 text-sage-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                                                </svg>
+                                            </div>
+                                            <h2 class="text-xl font-semibold text-sage-800">Step 1: Upload Your Resume</h2>
+                                        </div>
+                                        
+                                        <div class="upload-zone rounded-lg p-6 text-center cursor-pointer w-full max-w-md" id="uploadZone">
+                                            <input type="file" id="resumeFile" accept=".pdf,.docx,.doc" class="hidden">
+                                            <label for="resumeFile" class="cursor-pointer block">
+                                                <div class="space-y-3">
+                                                    <div class="mx-auto w-12 h-12 bg-sage-100 rounded-full flex items-center justify-center">
+                                                        <svg class="w-6 h-6 text-sage-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path>
+                                                        </svg>
+                                                    </div>
+                                                    <div>
+                                                        <p class="text-sage-700 font-medium">Click to upload resume</p>
+                                                        <p class="text-sm text-sage-500">PDF, DOCX up to 10MB</p>
+                                                    </div>
+                                                </div>
+                                            </label>
+                                        </div>
+                                        
+                                        <button onclick="processResume()" class="mt-4 btn-primary py-3 px-8 rounded-lg font-medium text-white flex items-center justify-center" disabled id="processBtn">
+                                            <span id="processText">Select a file first</span>
+                                            <svg id="processSpinner" class="hidden ml-2 w-5 h-5 loading text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <circle cx="12" cy="12" r="10" stroke-width="2"></circle>
+                                                <path d="m7 9 4-4 4 4M7 15l4 4 4-4"></path>
+                                            </svg>
+                                        </button>
+                                        
+                                        <!-- File name display for desktop -->
+                                        <div class="hidden mt-3 p-3 bg-sage-50 rounded-lg border border-sage-200" id="fileNameDisplay">
+                                            <div class="flex items-center">
+                                                <svg class="w-4 h-4 text-sage-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                                                </svg>
+                                                <span class="text-sm text-sage-700 font-medium" id="fileNameText"></span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- Resume Data Preview (side panel) -->
+                                    <div class="flex-1 ml-8">
+                                        <div class="hidden fade-in" id="resumeDataCard">
+                                            <div class="flex items-center mb-4">
+                                                <div class="w-6 h-6 rounded bg-green-100 flex items-center justify-center mr-2">
+                                                    <svg class="w-4 h-4 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                                                    </svg>
+                                                </div>
+                                                <h3 class="text-lg font-medium text-sage-800">Resume Processed</h3>
+                                            </div>
+                                            <div id="resumeData" class="space-y-3">
+                                                <!-- Resume data will be displayed here -->
+                                            </div>
+                                        </div>
+                                        <div class="text-sage-400 text-sm" id="resumePlaceholder">
+                                            Resume details will appear here after processing
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Middle section: Job Description (full width) -->
+                            <div class="glass-card rounded-xl p-8" id="jobSection" style="opacity: 0.5; pointer-events: none;">
+                                <div class="flex items-center mb-6">
+                                    <div class="w-8 h-8 rounded-lg bg-warm-100 flex items-center justify-center mr-3">
+                                        <svg class="w-5 h-5 text-warm-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2-2v2m8 0V6a2 2 0 012 2v6a2 2 0 01-2 2H8a2 2 0 01-2-2V8a2 2 0 012-2V6"></path>
+                                        </svg>
+                                    </div>
+                                    <h2 class="text-xl font-semibold text-sage-800">Step 2: Add Job Description</h2>
+                                </div>
+                                
+                                <div class="flex gap-6">
+                                    <div class="flex-1">
+                                        <textarea 
+                                            id="jobDescription" 
+                                            placeholder="Paste the job description here or try a sample job..."
+                                            class="input-field w-full h-32 rounded-lg px-4 py-3 resize-none focus:outline-none"
+                                            disabled
+                                        ></textarea>
+                                    </div>
+                                    <div class="flex flex-col gap-3">
+                                        <button onclick="loadSampleJob()" class="btn-secondary py-3 px-6 rounded-lg font-medium flex items-center whitespace-nowrap">
+                                            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path>
+                                            </svg>
+                                            Sample Job
+                                        </button>
+                                        
+                                        <button onclick="matchJobs()" class="btn-primary py-3 px-6 rounded-lg font-medium text-white flex items-center whitespace-nowrap" disabled id="matchBtn">
+                                            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+                                            </svg>
+                                            <span id="matchText">Find Matches</span>
+                                            <svg id="matchSpinner" class="hidden ml-2 w-5 h-5 loading" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <circle cx="12" cy="12" r="10" stroke-width="2"></circle>
+                                                <path d="m7 9 4-4 4 4M7 15l4 4 4-4"></path>
+                                            </svg>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Bottom section: Match Results (expandable) -->
+                            <div class="glass-card rounded-xl p-8 hidden fade-in" id="matchResultsCard">
+                                <div class="flex items-center mb-6">
+                                    <div class="w-8 h-8 rounded-lg bg-blush-100 flex items-center justify-center mr-3">
+                                        <svg class="w-5 h-5 text-blush-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+                                        </svg>
+                                    </div>
+                                    <h2 class="text-xl font-semibold text-sage-800">Step 3: Your Match Results</h2>
+                                </div>
+                                <div id="matchResults">
+                                    <!-- Match results will be displayed here -->
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <script>
+                let resumeData = null;
+                let sampleJobs = [];
+
+                // File upload handling for both mobile and desktop
+                function handleFileUpload(file) {
+                    if (file) {
+                        // Desktop elements
+                        const processBtn = document.getElementById('processBtn');
+                        const processText = document.getElementById('processText');
+                        const fileNameDisplay = document.getElementById('fileNameDisplay');
+                        
+                        // Mobile elements
+                        const processBtnMobile = document.getElementById('processBtnMobile');
+                        const processTextMobile = document.getElementById('processTextMobile');
+                        const fileNameDisplayMobile = document.getElementById('fileNameDisplayMobile');
+                        
+                        const fileName = file.name;
+                        const shortFileName = file.name.length > 25 ? file.name.substring(0, 25) + '...' : file.name;
+                        
+                        // Update desktop
+                        if (processBtn) {
+                            processBtn.disabled = false;
+                            processBtn.classList.remove('opacity-50');
+                            processText.textContent = 'Process Resume';
+                        }
+                        
+                        if (fileNameDisplay) {
+                            const fileNameText = document.getElementById('fileNameText');
+                            if (fileNameText) {
+                                fileNameText.textContent = shortFileName;
+                            }
+                            fileNameDisplay.classList.remove('hidden');
+                        }
+                        
+                        // Update mobile
+                        if (processBtnMobile) {
+                            processBtnMobile.disabled = false;
+                            processBtnMobile.classList.remove('opacity-50');
+                            processTextMobile.textContent = 'Process Resume';
+                        }
+                        
+                        if (fileNameDisplayMobile) {
+                            const fileNameTextMobile = document.getElementById('fileNameTextMobile');
+                            if (fileNameTextMobile) {
+                                fileNameTextMobile.textContent = shortFileName;
+                            }
+                            fileNameDisplayMobile.classList.remove('hidden');
+                        }
+                    }
+                }
+
+                // Desktop file upload
+                document.getElementById('resumeFile').addEventListener('change', function(e) {
+                    const file = e.target.files[0];
+                    handleFileUpload(file);
+                });
+
+                // Mobile file upload
+                document.getElementById('resumeFileMobile').addEventListener('change', function(e) {
+                    const file = e.target.files[0];
+                    handleFileUpload(file);
+                });
+
+                async function processResume() {
+                    // Get file from either desktop or mobile input
+                    const fileInputDesktop = document.getElementById('resumeFile');
+                    const fileInputMobile = document.getElementById('resumeFileMobile');
+                    const file = fileInputDesktop?.files[0] || fileInputMobile?.files[0];
+                    
+                    if (!file) {
+                        showNotification('Please select a file first', 'error');
+                        return;
+                    }
+
+                    // Show loading state for both layouts
+                    const processBtn = document.getElementById('processBtn');
+                    const processText = document.getElementById('processText');
+                    const processSpinner = document.getElementById('processSpinner');
+                    
+                    const processBtnMobile = document.getElementById('processBtnMobile');
+                    const processTextMobile = document.getElementById('processTextMobile');
+                    const processSpinnerMobile = document.getElementById('processSpinnerMobile');
+                    
+                    // Desktop loading state
+                    if (processBtn) {
+                        processBtn.disabled = true;
+                        processText.textContent = 'Processing...';
+                        processSpinner.classList.remove('hidden');
+                    }
+                    
+                    // Mobile loading state
+                    if (processBtnMobile) {
+                        processBtnMobile.disabled = true;
+                        processTextMobile.textContent = 'Processing...';
+                        processSpinnerMobile.classList.remove('hidden');
+                    }
+
+                    try {
+                        const formData = new FormData();
+                        const file = fileInputDesktop?.files[0] || fileInputMobile?.files[0];
+                        formData.append("resume", file);  
+
+
+                        const response = await fetch('/upload-resume', {
+                            method: 'POST',
+                            body: formData
+                        });
+
+                        // Check if response is ok
+                        if (!response.ok) {
+                            throw new Error(`HTTP error! status: ${response.status}`);
+                        }
+
+                        // Check if response has content
+                        const text = await response.text();
+                        if (!text) {
+                            throw new Error('Empty response received from server');
+                        }
+
+                        let result;
+                        try {
+                            result = JSON.parse(text);
+                        } catch (parseError) {
+                            console.error('JSON parse error:', parseError);
+                            console.error('Response text:', text);
+                            throw new Error('Invalid JSON response from server');
+                        }
+
+                        if (result.status === 'success') {
+                            resumeData = result.data;
+                            displayResumeData(resumeData);
+                            enableJobMatching();
+                            updateStepProgress(2); // Enable step 2
+                            showNotification('Resume processed successfully!', 'success');
+                        } else {
+                            throw new Error(result.error || 'Failed to process resume');
+                        }
+                    } catch (error) {
+                        console.error('Process resume error:', error);
+                        showNotification('Error processing resume: ' + error.message, 'error');
+                    } finally {
+                        // Reset button state for both layouts
+                        if (processBtn) {
+                            processBtn.disabled = false;
+                            processText.textContent = 'Process Resume';
+                            processSpinner.classList.add('hidden');
+                        }
+                        
+                        if (processBtnMobile) {
+                            processBtnMobile.disabled = false;
+                            processTextMobile.textContent = 'Process Resume';
+                            processSpinnerMobile.classList.add('hidden');
+                        }
+                    }
+                }
+
+                function updateStepProgress(step) {
+                    // Update desktop step indicators
+                    const step1 = document.getElementById('step1');
+                    const step2 = document.getElementById('step2');
+                    const step3 = document.getElementById('step3');
+                    const jobSection = document.getElementById('jobSection');
+                    
+                    // Update mobile step indicators
+                    const stepMobile1 = document.getElementById('stepMobile1');
+                    const stepMobile2 = document.getElementById('stepMobile2');
+                    const stepMobile3 = document.getElementById('stepMobile3');
+                    const progressBar1 = document.getElementById('progressBar1');
+                    const progressBar2 = document.getElementById('progressBar2');
+                    const jobSectionMobile = document.getElementById('jobSectionMobile');
+                    
+                    if (step >= 2) {
+                        // Desktop step 2
+                        if (step2) {
+                            step2.classList.remove('opacity-50');
+                            
+                            // Safely update step 2 elements
+                            const bgElement = step2.querySelector('.bg-sage-300');
+                            const textElement = step2.querySelector('.text-sage-600');
+                            const subTextElement = step2.querySelector('.text-sage-400');
+                            
+                            if (bgElement) {
+                                bgElement.className = 'w-10 h-10 rounded-full bg-sage-500 text-white flex items-center justify-center font-semibold';
+                            }
+                            if (textElement) {
+                                textElement.className = 'text-sm font-medium text-sage-800';
+                            }
+                            if (subTextElement) {
+                                subTextElement.className = 'text-xs text-sage-500';
+                            }
+                            
+                            if (jobSection) {
+                                jobSection.style.opacity = '1';
+                                jobSection.style.pointerEvents = 'auto';
+                            }
+                        }
+                        
+                        // Mobile step 2
+                        if (stepMobile2) {
+                            stepMobile2.classList.remove('opacity-50');
+                            
+                            // Safely update mobile step 2 elements
+                            const mobileBgElement = stepMobile2.querySelector('.bg-sage-300');
+                            const mobileTextElement = stepMobile2.querySelector('.text-sage-600');
+                            
+                            if (mobileBgElement) {
+                                mobileBgElement.className = 'w-8 h-8 rounded-full bg-sage-500 text-white flex items-center justify-center text-sm font-semibold';
+                            }
+                            if (mobileTextElement) {
+                                mobileTextElement.className = 'text-sm font-medium text-sage-800';
+                            }
+                            
+                            if (progressBar1) progressBar1.style.width = '100%';
+                            if (progressBar2) progressBar2.style.width = '33%';
+                            
+                            if (jobSectionMobile) {
+                                jobSectionMobile.style.opacity = '1';
+                                jobSectionMobile.style.pointerEvents = 'auto';
+                            }
+                        }
+                    }
+                    
+                    if (step >= 3) {
+                        // Desktop step 3
+                        if (step3) {
+                            step3.classList.remove('opacity-50');
+                            
+                            // Safely update step 3 elements
+                            const step3BgElement = step3.querySelector('.bg-sage-300');
+                            const step3TextElement = step3.querySelector('.text-sage-600');
+                            const step3SubTextElement = step3.querySelector('.text-sage-400');
+                            
+                            if (step3BgElement) {
+                                step3BgElement.className = 'w-10 h-10 rounded-full bg-sage-500 text-white flex items-center justify-center font-semibold';
+                            }
+                            if (step3TextElement) {
+                                step3TextElement.className = 'text-sm font-medium text-sage-800';
+                            }
+                            if (step3SubTextElement) {
+                                step3SubTextElement.className = 'text-xs text-sage-500';
+                            }
+                        }
+                        
+                        // Mobile step 3
+                        if (stepMobile3) {
+                            stepMobile3.classList.remove('opacity-50');
+                            
+                            // Safely update mobile step 3 elements
+                            const step3MobileBgElement = stepMobile3.querySelector('.bg-sage-300');
+                            const step3MobileTextElement = stepMobile3.querySelector('.text-sage-600');
+                            
+                            if (step3MobileBgElement) {
+                                step3MobileBgElement.className = 'w-8 h-8 rounded-full bg-sage-500 text-white flex items-center justify-center text-sm font-semibold';
+                            }
+                            if (step3MobileTextElement) {
+                                step3MobileTextElement.className = 'text-sm font-medium text-sage-800';
+                            }
+                            
+                            if (progressBar2) progressBar2.style.width = '100%';
+                        }
+                    }
+                }
+
+                function displayResumeData(data) {
+                    // Desktop elements
+                    const resumeDataCard = document.getElementById('resumeDataCard');
+                    const resumeDataDiv = document.getElementById('resumeData');
+                    const resumePlaceholder = document.getElementById('resumePlaceholder');
+                    
+                    // Mobile elements
+                    const resumeDataCardMobile = document.getElementById('resumeDataCardMobile');
+                    const resumeDataMobile = document.getElementById('resumeDataMobile');
+
+                    let html = generateResumeHtml(data);
+
+                    // Update desktop layout
+                    if (resumeDataDiv) {
+                        resumeDataDiv.innerHTML = html;
+                        resumeDataCard.classList.remove('hidden');
+                        if (resumePlaceholder) resumePlaceholder.style.display = 'none';
+                    }
+                    
+                    // Update mobile layout
+                    if (resumeDataMobile) {
+                        resumeDataMobile.innerHTML = html;
+                        resumeDataCardMobile.classList.remove('hidden');
+                    }
+                }
+
+                function generateResumeHtml(data) {
+                    let html = '<div class="grid grid-cols-1 md:grid-cols-2 gap-4">';
+                    
+                    if (data.name && data.name !== 'Unknown') {
+                        html += `
+                            <div class="bg-sage-50 rounded-lg p-4">
+                                <div class="text-sm text-sage-600 mb-1">Name</div>
+                                <div class="font-medium text-sage-800">${data.name}</div>
+                            </div>
+                        `;
+                    }
+                    
+                    if (data.email) {
+                        html += `
+                            <div class="bg-sage-50 rounded-lg p-4">
+                                <div class="text-sm text-sage-600 mb-1">Email</div>
+                                <div class="font-medium text-sage-800">${data.email}</div>
+                            </div>
+                        `;
+                    }
+                    
+                    if (data.experience && data.experience.length > 0) {
+                        html += `
+                            <div class="bg-sage-50 rounded-lg p-4">
+                                <div class="text-sm text-sage-600 mb-1">Experience</div>
+                                <div class="font-medium text-sage-800">${data.experience.length} positions</div>
+                            </div>
+                        `;
+                    }
+                    
+                    if (data.education && data.education.length > 0) {
+                        html += `
+                            <div class="bg-sage-50 rounded-lg p-4">
+                                <div class="text-sm text-sage-600 mb-1">Education</div>
+                                <div class="font-medium text-sage-800">${data.education.length} degrees</div>
+                            </div>
+                        `;
+                    }
+                    
+                    html += '</div>';
+                    
+                    if (data.skills && data.skills.length > 0) {
+                        html += `
+                            <div class="mt-6">
+                                <div class="text-sm text-sage-600 mb-3">Skills Detected</div>
+                                <div class="flex flex-wrap gap-2">
+                        `;
+                        data.skills.slice(0, 12).forEach(skill => {
+                            html += `<span class="skill-tag px-3 py-1 rounded-full text-sm font-medium">${skill}</span>`;
+                        });
+                        if (data.skills.length > 12) {
+                            html += `<span class="text-sage-500 text-sm">+${data.skills.length - 12} more</span>`;
+                        }
+                        html += '</div></div>';
+                    }
+
+                    return html;
+                }
+
+                function enableJobMatching() {
+                    // Desktop elements
+                    const jobDescription = document.getElementById('jobDescription');
+                    const matchBtn = document.getElementById('matchBtn');
+                    const matchText = document.getElementById('matchText');
+                    
+                    // Mobile elements  
+                    const jobDescriptionMobile = document.getElementById('jobDescriptionMobile');
+                    const matchBtnMobile = document.getElementById('matchBtnMobile');
+                    const matchTextMobile = document.getElementById('matchTextMobile');
+
+                    // Enable desktop
+                    if (jobDescription) {
+                        jobDescription.disabled = false;
+                        matchBtn.disabled = false;
+                        matchBtn.classList.remove('opacity-50');
+                        matchText.textContent = 'Find Matches';
+                    }
+                    
+                    // Enable mobile
+                    if (jobDescriptionMobile) {
+                        jobDescriptionMobile.disabled = false;
+                        matchBtnMobile.disabled = false;
+                        matchBtnMobile.classList.remove('opacity-50');
+                        matchTextMobile.textContent = 'Find Matches';
+                    }
+                }
+
+                async function loadSampleJob() {
+                    try {
+                        if (sampleJobs.length === 0) {
+                            const response = await fetch('/sample-jobs');
+                            
+                            // Check if response is ok
+                            if (!response.ok) {
+                                throw new Error(`HTTP error! status: ${response.status}`);
+                            }
+
+                            // Check if response has content
+                            const text = await response.text();
+                            if (!text) {
+                                throw new Error('Empty response received from server');
+                            }
+
+                            let result;
+                            try {
+                                result = JSON.parse(text);
+                            } catch (parseError) {
+                                console.error('JSON parse error:', parseError);
+                                console.error('Response text:', text);
+                                throw new Error('Invalid JSON response from server');
+                            }
+
+                            if (result.status === 'success') {
+                                sampleJobs = result.jobs;
+                            } else {
+                                throw new Error(result.error || 'Failed to load sample jobs');
+                            }
+                        }
+
+                        // Select a random sample job
+                        const randomJob = sampleJobs[Math.floor(Math.random() * sampleJobs.length)];
+                        
+                        // Update both desktop and mobile textareas
+                        const jobDescription = document.getElementById('jobDescription');
+                        const jobDescriptionMobile = document.getElementById('jobDescriptionMobile');
+                        
+                        if (jobDescription) jobDescription.value = randomJob.description;
+                        if (jobDescriptionMobile) jobDescriptionMobile.value = randomJob.description;
+                        
+                        showNotification('Sample job loaded!', 'success');
+                    } catch (error) {
+                        console.error('Error loading sample job:', error);
+                        showNotification('Error loading sample job: ' + error.message, 'error');
+                    }
+                }
+
+                async function matchJobs() {
+                    // Get job description from either desktop or mobile
+                    const jobDescriptionDesktop = document.getElementById('jobDescription');
+                    const jobDescriptionMobile = document.getElementById('jobDescriptionMobile');
+                    const jobDescription = (jobDescriptionDesktop?.value || jobDescriptionMobile?.value || '').trim();
+                    
+                    if (!jobDescription) {
+                        showNotification('Please enter a job description', 'error');
+                        return;
+                    }
+
+                    if (!resumeData) {
+                        showNotification('Please upload and process a resume first', 'error');
+                        return;
+                    }
+
+                    // Show loading state for both layouts
+                    const matchBtn = document.getElementById('matchBtn');
+                    const matchText = document.getElementById('matchText');
+                    const matchSpinner = document.getElementById('matchSpinner');
+                    
+                    const matchBtnMobile = document.getElementById('matchBtnMobile');
+                    const matchTextMobile = document.getElementById('matchTextMobile');
+                    const matchSpinnerMobile = document.getElementById('matchSpinnerMobile');
+                    
+                    // Desktop loading state
+                    if (matchBtn) {
+                        matchBtn.disabled = true;
+                        matchText.textContent = 'Analyzing...';
+                        matchSpinner.classList.remove('hidden');
+                    }
+                    
+                    // Mobile loading state
+                    if (matchBtnMobile) {
+                        matchBtnMobile.disabled = true;
+                        matchTextMobile.textContent = 'Analyzing...';
+                        matchSpinnerMobile.classList.remove('hidden');
+                    }
+
+                    try {
+                        const response = await fetch('/match-jobs', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                            },
+                            body: JSON.stringify({
+                                resume_data: resumeData,
+                                job_description: jobDescription
+                            })
+                        });
+
+                        // Check if response is ok
+                        if (!response.ok) {
+                            throw new Error(`HTTP error! status: ${response.status}`);
+                        }
+
+                        // Check if response has content
+                        const text = await response.text();
+                        if (!text) {
+                            throw new Error('Empty response received from server');
+                        }
+
+                        let result;
+                        try {
+                            result = JSON.parse(text);
+                        } catch (parseError) {
+                            console.error('JSON parse error:', parseError);
+                            console.error('Response text:', text);
+                            throw new Error('Invalid JSON response from server');
+                        }
+
+                        if (result.status === 'success') {
+                            displayMatchResults(result.match);
+                            updateStepProgress(3); // Enable step 3
+                            showNotification('Match analysis complete!', 'success');
+                        } else {
+                            throw new Error(result.error || 'Failed to match jobs');
+                        }
+                    } catch (error) {
+                        console.error('Match jobs error:', error);
+                        showNotification('Error matching jobs: ' + error.message, 'error');
+                    } finally {
+                        // Reset button state for both layouts
+                        if (matchBtn) {
+                            matchBtn.disabled = false;
+                            matchText.textContent = 'Find Matches';
+                            matchSpinner.classList.add('hidden');
+                        }
+                        
+                        if (matchBtnMobile) {
+                            matchBtnMobile.disabled = false;
+                            matchTextMobile.textContent = 'Find Matches';
+                            matchSpinnerMobile.classList.add('hidden');
+                        }
+                    }
+                }
+
+                function displayMatchResults(match) {
+                    // Desktop elements
+                    const matchResultsCard = document.getElementById('matchResultsCard');
+                    const matchResultsDiv = document.getElementById('matchResults');
+                    
+                    // Mobile elements
+                    const matchResultsCardMobile = document.getElementById('matchResultsCardMobile');
+                    const matchResultsMobile = document.getElementById('matchResultsMobile');
+
+                    const scoreColor = match.overall_score >= 70 ? 'text-green-600' : 
+                                    match.overall_score >= 50 ? 'text-yellow-600' : 'text-red-600';
+                    
+                    const scoreBg = match.overall_score >= 70 ? 'bg-green-50 border-green-200' : 
+                                match.overall_score >= 50 ? 'bg-yellow-50 border-yellow-200' : 'bg-red-50 border-red-200';
+
+                    let html = `
+                        <div class="space-y-8">
+                            <!-- Overall Score -->
+                            <div class="text-center ${scoreBg} border rounded-xl p-6">
+                                <div class="text-4xl font-bold ${scoreColor} mb-2">${match.overall_score}%</div>
+                                <div class="text-sage-600 font-medium">Overall Match Score</div>
+                            </div>
+
+                            <!-- Score Breakdown -->
+                            <div>
+                                <h3 class="font-semibold text-sage-800 mb-4 flex items-center">
+                                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+                                    </svg>
+                                    Score Breakdown
+                                </h3>
+                                <div class="space-y-3">
+                    `;
+
+                    for (const [category, score] of Object.entries(match.breakdown)) {
+                        const width = Math.max(score, 2);
+                        html += `
+                            <div class="flex items-center gap-4">
+                                <div class="w-24 text-sm text-sage-600">${category}</div>
+                                <div class="flex-1 bg-gray-200 rounded-full h-3 overflow-hidden">
+                                    <div class="progress-bar h-full rounded-full transition-all duration-700" style="width: ${width}%"></div>
+                                </div>
+                                <div class="w-12 text-sm font-medium text-sage-800 text-right">${score}%</div>
+                            </div>
+                        `;
+                    }
+
+                    html += `
+                                </div>
+                            </div>
+
+                            <!-- Matched Skills -->
+                            <div>
+                                <h3 class="font-semibold text-sage-800 mb-4 flex items-center">
+                                    <svg class="w-5 h-5 mr-2 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                                    </svg>
+                                    Matched Skills
+                                </h3>
+                                <div class="flex flex-wrap gap-2">
+                    `;
+
+                    if (match.matched_skills && match.matched_skills.length > 0) {
+                        match.matched_skills.forEach(skill => {
+                            html += `<span class="skill-tag px-3 py-2 rounded-lg text-sm font-medium">${skill.skill}</span>`;
+                        });
+                    } else {
+                        html += `<span class="text-sage-500 text-sm bg-sage-50 px-3 py-2 rounded-lg">No matched skills found</span>`;
+                    }
+
+                    html += `
+                                </div>
+                            </div>
+
+                            <!-- Missing Skills -->
+                            <div>
+                                <h3 class="font-semibold text-sage-800 mb-4 flex items-center">
+                                    <svg class="w-5 h-5 mr-2 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                                    </svg>
+                                    Skills to Develop
+                                </h3>
+                                <div class="flex flex-wrap gap-2">
+                    `;
+
+                    if (match.missing_skills && match.missing_skills.length > 0) {
+                        match.missing_skills.forEach(skill => {
+                            html += `<span class="skill-tag-missing px-3 py-2 rounded-lg text-sm font-medium">${skill}</span>`;
+                        });
+                    } else {
+                        html += `<span class="text-sage-500 text-sm bg-sage-50 px-3 py-2 rounded-lg">All required skills matched!</span>`;
+                    }
+
+                    html += `
+                                </div>
+                            </div>
+
+                            <!-- Recommendations -->
+                            <div>
+                                <h3 class="font-semibold text-sage-800 mb-4 flex items-center">
+                                    <svg class="w-5 h-5 mr-2 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"></path>
+                                    </svg>
+                                    Recommendations
+                                </h3>
+                                <div class="bg-cream-50 rounded-lg p-4">
+                                    <ul class="space-y-2">
+                    `;
+
+                    if (match.recommendations && match.recommendations.length > 0) {
+                        match.recommendations.forEach(rec => {
+                            html += `<li class="text-sm text-sage-700 flex items-start">
+                                <svg class="w-4 h-4 mr-2 mt-0.5 text-sage-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                                </svg>
+                                ${rec}
+                            </li>`;
+                        });
+                    } else {
+                        html += `<li class="text-sm text-sage-700">Great job! Your profile is well-matched for this position.</li>`;
+                    }
+
+                    html += `
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+
+                    // Update desktop layout
+                    if (matchResultsDiv) {
+                        matchResultsDiv.innerHTML = html;
+                        matchResultsCard.classList.remove('hidden');
+                        
+                        // Smooth scroll to results
+                        setTimeout(() => {
+                            matchResultsCard.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+                        }, 100);
+                    }
+                    
+                    // Update mobile layout
+                    if (matchResultsMobile) {
+                        matchResultsMobile.innerHTML = html;
+                        matchResultsCardMobile.classList.remove('hidden');
+                    }
+                }
+
+                function showNotification(message, type = 'info') {
+                    // Create notification element
+                    const notification = document.createElement('div');
+                    const bgColor = type === 'success' ? 'bg-green-500' : type === 'error' ? 'bg-red-500' : 'bg-blue-500';
+                    
+                    notification.className = `fixed top-4 right-4 ${bgColor} text-white px-6 py-3 rounded-lg shadow-lg z-50 transform translate-x-full transition-transform duration-300`;
+                    notification.textContent = message;
+                    
+                    document.body.appendChild(notification);
+                    
+                    // Slide in
+                    setTimeout(() => {
+                        notification.classList.remove('translate-x-full');
+                    }, 100);
+                    
+                    // Remove after 3 seconds
+                    setTimeout(() => {
+                        notification.classList.add('translate-x-full');
+                        setTimeout(() => {
+                            document.body.removeChild(notification);
+                        }, 300);
+                    }, 3000);
+                }
+
+                // Initialize
+                document.addEventListener('DOMContentLoaded', function() {
+                    // Initialize desktop buttons
+                    const processBtn = document.getElementById('processBtn');
+                    const matchBtn = document.getElementById('matchBtn');
+                    
+                    if (processBtn) processBtn.classList.add('opacity-50');
+                    if (matchBtn) matchBtn.classList.add('opacity-50');
+                    
+                    // Initialize mobile buttons
+                    const processBtnMobile = document.getElementById('processBtnMobile');
+                    const matchBtnMobile = document.getElementById('matchBtnMobile');
+                    
+                    if (processBtnMobile) processBtnMobile.classList.add('opacity-50');
+                    if (matchBtnMobile) matchBtnMobile.classList.add('opacity-50');
+                });
+            </script>
+        </body>
+        
+        
+        </html>

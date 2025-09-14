@@ -1,0 +1,2 @@
+AI-powered resume parser and job matcher that analyzes PDF/DOCX resumes and calculates compatibility scores with job descriptions.
+Features modern web interface, skill detection, personalized recommendations, and comprehensive matching algorithms for job seekers.
