@@ -1,8 +1,18 @@
 # Resume Parser & Job Matcher
 
+![Hero Image](images/hero-banner.png)
+
 A modern web application that analyzes resumes and matches them against job descriptions, providing detailed compatibility scores and actionable recommendations for job seekers.
 
-## Features
+## 🚀 Live Demo
+
+**Try it now:** [https://jd-resume-parser.vercel.app/](https://jd-resume-parser.vercel.app/)
+
+Upload your resume and see how well you match with different job opportunities!
+
+![Demo Preview](images/resume-parser.gif)
+
+## ✨ Features
 
 - **Resume Parsing**: Extract structured data from PDF and DOCX resumes
 - **Skill Detection**: Identify technical skills across programming languages, frameworks, and tools
@@ -11,9 +21,7 @@ A modern web application that analyzes resumes and matches them against job desc
 - **Modern UI**: Clean, responsive web interface with mobile support
 - **Sample Jobs**: Pre-loaded job descriptions for testing and demonstration
 
-## Live Demo
-
-Upload your resume and see how well you match with different job opportunities!
+![Features Overview](images/features-overview.png)
 
 ## Quick Start
 
@@ -59,9 +67,13 @@ Upload your resume and see how well you match with different job opportunities!
 
 ### Web Interface
 
+![Web Interface Screenshot](images/web-interface.png)
+
 1. **Upload Resume**: Drag and drop or click to upload your PDF/DOCX resume
 2. **Add Job Description**: Paste a job posting or use one of the sample jobs
 3. **Get Results**: View your match score, skill analysis, and recommendations
+
+![Results Screenshot](images/results-example.png)
 
 ### API Endpoints
 
@@ -117,7 +129,7 @@ match_results = match_response.json()['match']
 - **DOCX**: Microsoft Word document parsing
 - **DOC**: Legacy Word document support
 
-## Project Structure
+## 📁 Project Structure
 
 ```
 resume-parser/
@@ -127,9 +139,13 @@ resume-parser/
 ├── templates/
 │   └── index.html       # Web interface
 ├── sample_data/         # Sample resume files
+├── static/              # Static assets (favicon, etc.)
+├── images/              # README images
 ├── requirements.txt     # Python dependencies
 └── README.md           # This file
 ```
+
+![Architecture Diagram](images/architecture-diagram.png)
 
 ## Dependencies
 
