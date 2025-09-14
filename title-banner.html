@@ -1,0 +1,168 @@
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <title>Resume Parser & Job Matcher - OG Preview</title>
+        <style>
+        html, body {
+            margin: 0; 
+            height: 100%; 
+            background: linear-gradient(135deg, #1e3237 0%, #284349 50%, #325a68 100%);
+        }
+        .frame {
+            width: 1200px; 
+            height: 630px; 
+            background: linear-gradient(135deg, #1e3237 0%, #284349 50%, #325a68 100%);
+            display: flex; 
+            align-items: center; 
+            justify-content: center;
+            margin: 0 auto; 
+            position: absolute; 
+            inset: 0;
+            overflow: hidden;
+        }
+        .frame::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle at 30% 20%, rgba(187, 220, 229, 0.1) 0%, transparent 50%),
+                        radial-gradient(circle at 70% 80%, rgba(91, 161, 174, 0.08) 0%, transparent 50%);
+            animation: rotate 20s linear infinite;
+        }
+        @keyframes rotate {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        .stack { 
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; 
+            justify-content: center; 
+            gap: 32px;
+            position: relative;
+            z-index: 1;
+        }
+        .logo {
+            font-family: Helvetica, 'Helvetica Neue', Arial, sans-serif;
+            font-weight: 800; 
+            font-size: 72px; 
+            background: linear-gradient(135deg, #BBDCE5 0%, #9FCFD9 50%, #7CB8C4 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            letter-spacing: 1px; 
+            user-select: none; 
+            -webkit-user-select: none; 
+            -moz-user-select: none;
+            text-align: center; 
+            line-height: 1;
+            filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.3));
+        }
+        .subtitle { 
+            font-family: Helvetica, 'Helvetica Neue', Arial, sans-serif; 
+            font-weight: 500; 
+            font-size: 24px; 
+            color: #9FCFD9; 
+            opacity: 0.9; 
+            text-align: center; 
+        }
+        .steps {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 40px;
+            margin-top: 16px;
+        }
+        .step {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-family: Helvetica, 'Helvetica Neue', Arial, sans-serif;
+        }
+        .step-content {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+        .step-number {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #5BA1AE 0%, #4A8A97 100%);
+            color: #ffffff;
+            font-weight: 700;
+            font-size: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 12px rgba(91, 161, 174, 0.4);
+            border: 2px solid rgba(187, 220, 229, 0.3);
+        }
+        .step-text {
+            font-size: 16px;
+            color: #BBDCE5;
+            font-weight: 600;
+        }
+        .step-subtext {
+            font-size: 12px;
+            color: #9FCFD9;
+            font-weight: 400;
+            opacity: 0.8;
+        }
+        .arrow {
+            color: #7CB8C4;
+            font-size: 24px;
+            font-weight: 300;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+            animation: pulse 2s ease-in-out infinite;
+        }
+        @keyframes pulse {
+            0%, 100% { 
+                transform: scale(1);
+                opacity: 0.8;
+            }
+            50% { 
+                transform: scale(1.1);
+                opacity: 1;
+            }
+        }
+        </style>
+    </head>
+    <body>
+    <div class="frame">
+        <div class="stack">
+            <div class="logo">Resume Parser & Job Matcher</div>
+            <div class="subtitle">AI-powered resume analysis and job compatibility scoring</div>
+            <div class="steps">
+                <div class="step">
+                    <div class="step-number">1</div>
+                    <div class="step-content">
+                        <div class="step-text">Upload Resume</div>
+                        <div class="step-subtext">PDF or DOCX</div>
+                    </div>
+                </div>
+                <div class="arrow">→</div>
+                <div class="step">
+                    <div class="step-number">2</div>
+                    <div class="step-content">
+                        <div class="step-text">Add Job Description</div>
+                        <div class="step-subtext">Paste or sample</div>
+                    </div>
+                </div>
+                <div class="arrow">→</div>
+                <div class="step">
+                    <div class="step-number">3</div>
+                    <div class="step-content">
+                        <div class="step-text">Get Match Score</div>
+                        <div class="step-subtext">Instant analysis</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    </body>
+    </html>

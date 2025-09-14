@@ -34,6 +34,7 @@ app.add_middleware(
 
 # Mount static files
 app.mount("/static", StaticFiles(directory="static"), name="static")
+app.mount("/images", StaticFiles(directory="images"), name="images")
 
 # Initialize components
 resume_parser = ResumeParser()
