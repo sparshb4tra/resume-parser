@@ -1,6 +1,6 @@
 # Resume Parser & Job Matcher
 
-![Hero Image](images/hero-banner.png)
+
 
 A modern web application that analyzes resumes and matches them against job descriptions, providing detailed compatibility scores and actionable recommendations for job seekers.
 
